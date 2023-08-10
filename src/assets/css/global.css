@@ -68,7 +68,7 @@ header {
 }
 
 /* Nav Link */
-.nav-link > a {
+.nav-link>a {
     text-decoration: none;
     padding: 10px;
     border: 1px solid #4e4e4e;
@@ -103,6 +103,7 @@ header {
 form {
     padding: 10px;
 }
+
 select,
 textarea,
 input {
@@ -110,33 +111,44 @@ input {
     padding: 5px;
     margin-bottom: 10px;
 }
+
 textarea {
     height: 120px;
 }
+
 .product {
     text-align: center;
     padding: 10px;
 }
+
 .product form {
     padding: 20px 0;
     text-align: left;
 }
+
 .product input {
     margin-bottom: 10px;
 }
 
 /* Buttons */
 .buttons {
-    display: flex;
-    width: fit-content;
+    width: inherit;
     margin: 0 auto;
 }
+
 .buttons .btn {
-    width: 200px;
     display: block;
     margin: 10px;
 }
-button, .btn, a.btn {
+
+.buttons button.btn {
+    width: 100%;
+    margin: 10px auto;
+}
+
+button,
+.btn,
+a.btn {
     padding: 10px 20px;
     margin: 10px auto;
     border: 1px solid #4e4e4e;
@@ -166,6 +178,11 @@ button, .btn, a.btn {
     left: 50%;
     transform: translate(-50%, -50%);
 }
+img, video, audio {
+    height: auto;
+    max-width: 100%;
+    display: block;
+}
 
 @keyframes spin {
     0% {
@@ -183,6 +200,23 @@ button, .btn, a.btn {
         flex: auto;
     }
 }
+
+@media (min-width: 768px) {
+    .buttons {
+        display: flex;
+        margin: 10px 0 0 -10px;
+        width: calc(100% + 10px);
+    }
+
+    .buttons .btn {
+        flex: 1;
+        margin: 10px 0 0 10px;
+    }
+    .buttons button.btn {
+        margin: 10px 0 0 10px;
+    }
+}
+
 
 @media (min-width: 1024px) {
     .product-card {

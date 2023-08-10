@@ -47,12 +47,16 @@ export default {
 }
 .nav-link a {
     border: none;
-    color: #000000;
+    color: #444;
     font-weight: normal;
     text-transform: uppercase;
 }
 .nav-link a:hover {
-    color: #5b5b5b;
+    color: #888;
+}
+.nav-link a.router-link-exact-active {
+    color: #000000;
+    font-weight: bold;
 }
 
 </style>
