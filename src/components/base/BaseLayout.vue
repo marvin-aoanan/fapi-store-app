@@ -46,9 +46,15 @@ export default defineComponent({
       this.updateCSSVariables();
     },
     updateCSSVariables() {
-      document.documentElement.style.setProperty('--header-height', `${this.headerHeight}px`);
-      document.documentElement.style.setProperty('--nav-height', `${this.navHeight}px`);
-      document.documentElement.style.setProperty('--footer-height', `${this.footerHeight}px`);
+      const style = document.createElement("style");
+      document.head.appendChild(style);
+      style.sheet.insertRule(`
+      :root { 
+        --header-height: (${this.headerHeight}px);
+        --nav-height: ${this.navHeight}px;
+        --footer-height: ${this.footerHeight}px;
+      }`
+      );
     },
   },
   
@@ -56,14 +62,8 @@ export default defineComponent({
 </script>
 
 <style>
-:root {
-  --header-height: 0;
-  --nav-height: 0;
-  --footer-height: 0;
-}
-
 #content {
-  min-height: calc(100vh - var(--header-height) - var(--nav-height) - var(--footer-height));
+  min-height: calc(100vh - var(--header-height, 0px) - var(--nav-height, 0px) - var(--footer-height, 0px));
 }
 /* Other global styles */
 </style>
