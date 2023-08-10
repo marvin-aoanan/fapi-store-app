@@ -1,0 +1,56 @@
+<template>
+    <section id="filterOptions" class="filterOptions" @change="applyFilters">
+        <div id="filterByCategory" class="filter filterSelect">
+            <select v-model="selectedCategory" :class="'categorySelect'">
+                <option value="">All Categories</option>
+                <option v-for="category in uniqueCategories" :key="category">{{ category }}</option>
+            </select>
+        </div>
+        <div id="filterByRating" class="filter filterByRating">
+            <select id="ratingSelect" v-model.number="selectedRating">
+                <option value="">All Ratings</option>
+                <option v-for="rating in ratings" :key="rating" :value="rating">{{ rating }} stars</option>
+            </select>
+        </div>
+        <div id="filterByPrice" class="filter filterByPrice">
+            <label for="minPriceInput">Min Price: <span id="minPriceRange">{{ minPrice }}</span></label>
+            <input type="range" min="0" max="10000" id="minPriceInput" v-model.number="minPrice" class="rangePriceInput">
+            <label for="maxPriceInput">Max Price: <span id="maxPriceRange">{{ maxPrice }}</span></label>
+            <input type="range" min="0" max="10000" id="maxPriceInput" v-model.number="maxPrice" class="rangePriceInput">
+        </div>
+    </section>
+</template>
+
+<script>
+export default {
+    props: {
+        products: Array,
+    },
+    data() {
+        return {
+            selectedCategory: '',
+            ratings: [1, 2, 3, 4, 5],
+            selectedRating: '',
+            minPrice: 0,
+            maxPrice: 10000,
+        };
+    },
+    computed: {
+        uniqueCategories() {
+            const categories = new Set(this.products.map(product => product.category));
+            return Array.from(categories);
+        },
+    },
+    methods: {
+        applyFilters() {
+            console.log('Filtering...'); // Debugging
+            this.$emit('filter', {
+                category: this.selectedCategory,
+                rating: this.selectedRating,
+                minPrice: this.minPrice,
+                maxPrice: this.maxPrice,
+            });
+        },
+    },
+};
+</script>
