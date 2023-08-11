@@ -57,4 +57,24 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.filterOptions {
+    display: flex;
+    flex-flow: row wrap;
+    flex-wrap: wrap;
+    padding: 5px 0;
+}
+.filterOptions>* {
+    flex: 1 33.33%;
+    margin: 5px;
+    padding: 0;
+}
+.filterOptions input,
+.filterOptions select
+{
+    margin: 0;
+}
+.categorySelect {
+    text-transform: capitalize;
+}
+</style>

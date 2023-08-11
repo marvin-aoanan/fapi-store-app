@@ -42,13 +42,14 @@ export default {
 }
 .nav-link {
     list-style: none;
-    
-   
 }
 .nav-link a {
+    display: inline-block;
+    padding: 16px;
     border: none;
     color: #444;
     font-weight: normal;
+    text-decoration: none;
     text-transform: uppercase;
 }
 .nav-link a:hover {
