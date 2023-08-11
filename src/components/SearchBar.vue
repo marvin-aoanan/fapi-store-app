@@ -1,7 +1,7 @@
 <template>
     <section id="search" class="search">
-        <span class="search-icon"><i class="fa fa-regular fa-magnifying-glass"></i></span>
         <input v-model="searchQuery" @input="searchProducts" placeholder="Search products" />
+        <i class="fa fa-search"></i>
     </section>
 </template>
   
@@ -20,3 +20,24 @@ export default {
     },
 };
 </script>
+
+<style scoped>
+.search input {
+    margin: 0;
+}
+.search {
+    padding: 5px;
+    position: relative;
+}
+.search .fa-search {
+    display: flex;
+    position: absolute;
+    right: 13px;
+    top: 0;
+    bottom: 0;
+    font-size: 14px;
+    align-items: center;
+    color: #44444488;
+}
+
+</style>
