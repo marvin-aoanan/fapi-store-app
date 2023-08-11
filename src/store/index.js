@@ -7,6 +7,7 @@ export default createStore({
   state: {
     products: [],
     categories: [],
+    loading: false,
   },
   mutations: {
     setProducts(state, products) {
@@ -15,16 +16,22 @@ export default createStore({
     setCategories(state, categories) {
       state.categories = categories;
     },
+    setLoading(state, loading) { // Add a mutation to update loading state
+      state.loading = loading;
+    },
   },
   actions: {
     async fetchProducts({ commit }) {
-      const response = await fetch('https://fakestoreapi.com/products');
-      const products = await response.json();
-      commit('setProducts', products);
-
-      // Fetch unique categories and commit them to state
-      const uniqueCategories = Array.from(new Set(products.map(product => product.category)));
-      commit('setCategories', uniqueCategories);
+      commit('setLoading', true); // Set loading to true before fetching products
+      try {
+        const response = await fetch('https://fakestoreapi.com/products');
+        const products = await response.json();
+        commit('setProducts', products);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      } finally {
+        commit('setLoading', false); // Set loading to false after fetching products
+      }
     },
   },
   modules: {},
