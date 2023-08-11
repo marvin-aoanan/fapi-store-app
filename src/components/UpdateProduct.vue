@@ -92,5 +92,20 @@ export default {
 </script>
 
 <style scoped>
+@media (min-width: 768px) {
+    .buttons {
+        display: flex;
+        margin: 10px 0 0 -10px;
+        width: calc(100% + 10px);
+    }
 
+    .buttons .btn {
+        flex: 1;
+        margin: 10px 0 0 10px;
+    }
+
+    .buttons button.btn {
+        margin: 10px 0 0 10px;
+    }
+}
 </style>

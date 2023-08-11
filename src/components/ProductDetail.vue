@@ -8,19 +8,20 @@
       <p class="product-description">{{ detailedProduct.description }}</p>
       <p class="product-price">Price: {{ detailedProduct.price }}</p>
       <div class="product-rating">
-        <p>
+        <p><strong>Rating: </strong> 
           <span v-for="star in 5" :key="star"
             :class="['fa', 'fa-star', { 'checked': star <= Math.floor(detailedProduct.rating.rate) }]"></span>
         </p>
         <p><em>{{ detailedProduct.rating.rate }} average based on {{ detailedProduct.rating.count }} reviews.</em></p>
       </div>
-    </div>
-    <div class="buttons">
+      <div class="buttons">
       <router-link :to="{ name: 'ProductUpdate' }" class="btn">
         <span class="icon icon-arrow-left"></span>Update Product Details
       </router-link>
       <a @click="deleteProduct" href="#" class="btn">Delete Product</a>
     </div>
+    </div>
+    
   </div>
   
 </template>

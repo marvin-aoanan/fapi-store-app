@@ -1,7 +1,17 @@
 <template>
-  <SearchBar @search="updateSearchQuery" />
-  <FilterOptions v-if="products.length" :products="products" @filter="updateFilters" />
-  <div id="productList">
+  <div id="toolbar" class="toolbar">
+    <div class="search-tool">
+      <SearchBar @search="updateSearchQuery" />
+    </div>
+    <div class="filter-icon btn-filter" @click="toggleFilter">
+      <i class="fa fa-solid fa-filter"></i>
+    </div>
+    <div class="filter-tool" :class="{ 'is-active': isActive }">
+      <FilterOptions v-if="products.length" :products="products" @filter="updateFilters" />
+    </div>
+  </div>
+
+  <div id="productList" class="productList">
     <div :id="product.id" class="product-card" v-for="product in filteredProducts" :key="product.id">
       <div class="product-image">
         <img :src="product.image" :alt="product.title" />
@@ -47,6 +57,7 @@ export default {
   data() {
     return {
       query: '',
+      isActive: false,
       filters: null,
       selectedCategory: '',
       selectedRating: '',
@@ -58,6 +69,9 @@ export default {
     ...mapActions(['fetchProducts']),
     updateSearchQuery(query) {
       this.query = query;
+    },
+    toggleFilter() {
+      this.isActive = !this.isActive;
     },
     // Update the filters based on filter options from FilterOptions component
     updateFilters(filters) {

@@ -9,7 +9,9 @@
         <div id="filterByRating" class="filter filterByRating">
             <select id="ratingSelect" v-model.number="selectedRating">
                 <option value="">All Ratings</option>
-                <option v-for="rating in ratings" :key="rating" :value="rating">{{ rating }} stars</option>
+                <option v-for="rating in ratings" :key="rating" :value="rating">
+                    {{ rating }} {{ rating > 1 ? 'stars' : 'star' }}
+                </option>
             </select>
         </div>
         <div id="filterByPrice" class="filter filterByPrice">
@@ -29,7 +31,7 @@ export default {
     data() {
         return {
             selectedCategory: '',
-            ratings: [1, 2, 3, 4, 5],
+            ratings: [0, 1, 2, 3, 4, 5],
             selectedRating: '',
             minPrice: 0,
             maxPrice: 10000,
@@ -54,3 +56,5 @@ export default {
     },
 };
 </script>
+
+<style scoped></style>

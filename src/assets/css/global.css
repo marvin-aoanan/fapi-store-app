@@ -16,6 +16,7 @@ body {
     margin: 0;
     padding: 0;
     font-size: 14px;
+    overflow-x: hidden;
 }
 
 header {
@@ -75,10 +76,40 @@ header {
     display: inline-block;
 
 }
+/* Toolbar */
+.toolbar {
+    display: flex;
+    position: relative;
+    align-items: center;
+}
+.search-tool {
+    width: calc(100% - 28px);
+}
+.filter-icon {
+    font-size: 28px;
+}
+.filter-tool {
+    position: absolute;
+    width: 80%;
+    max-width: 340px;
+    background: #ffffff88;
+    backdrop-filter: blur(40px);
+    border: 1px solid #b2b2b2;
+    top: 40px;
+    right: -100%;
+    transition: 0.4s;
+}
+.filter-tool.is-active {
+    right: 5px;
+    transition: 0.4s;
+}
 
 /* Search */
 .search {
     padding: 5px;
+}
+.search input {
+    margin: 0;
 }
 
 /* Filter */
@@ -88,11 +119,15 @@ header {
     flex-wrap: wrap;
     padding: 5px 0;
 }
-
 .filterOptions>* {
     flex: 1 33.33%;
     margin: 5px;
     padding: 0;
+}
+.filterOptions input,
+.filterOptions select
+{
+    margin: 0;
 }
 
 .categorySelect {
@@ -202,7 +237,15 @@ img, video, audio {
 }
 
 @media (min-width: 768px) {
-    .buttons {
+    .product-detail {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    .product-detail > * {
+        flex: 1;
+    }
+
+    /* .buttons {
         display: flex;
         margin: 10px 0 0 -10px;
         width: calc(100% + 10px);
@@ -214,7 +257,7 @@ img, video, audio {
     }
     .buttons button.btn {
         margin: 10px 0 0 10px;
-    }
+    } */
 }
 
 

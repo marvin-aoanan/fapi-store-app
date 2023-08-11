@@ -50,7 +50,7 @@ export default defineComponent({
       document.head.appendChild(style);
       style.sheet.insertRule(`
       :root { 
-        --header-height: (${this.headerHeight}px);
+        --header-height: ${this.headerHeight}px;
         --nav-height: ${this.navHeight}px;
         --footer-height: ${this.footerHeight}px;
       }`
@@ -64,6 +64,8 @@ export default defineComponent({
 <style>
 #content {
   min-height: calc(100vh - var(--header-height, 0px) - var(--nav-height, 0px) - var(--footer-height, 0px));
+  position: relative;
+  overflow-x: hidden;
 }
 /* Other global styles */
 </style>
