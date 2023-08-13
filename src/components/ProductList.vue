@@ -1,7 +1,7 @@
 <template>
   <div id="toolbar" class="toolbar">
     <div class="search-tool">
-      <SearchBar @search="updateSearchQuery" />
+      <SearchBar @search="updateSearch" />
     </div>
     <div class="btn-filter">
       <i class="fa fa-solid fa-filter" :class="{ 'is-active': isActive }" @click="toggleFilter"></i>
@@ -9,13 +9,13 @@
         :second-icon-class="'fa fa-regular fa-rectangle-list'" @toggle="toggleLayout" />
     </div>
     <div class="filter-tool" :class="{ 'is-active': isActive }">
-      <FilterOptions v-if="products.length" :products="products" @filter="updateFilters" />
+      <FilterOptions v-if="products.length" :products="filteredProducts" @filter="updateFilters" />
     </div>
   </div>
 
-  <div v-if="loading" class="loader"></div>
-  <div v-else id="productList" class="productList" :class="productListClasses">
-    <div :id="product.id" class="product-card" v-for="product in filteredProducts" :key="product.id">
+  <div v-if="loading || searching || filtering" class="loader"></div>
+  <div v-else id="productList" class="productList" :class="productListLayout">
+    <div :id="product.id" class="product-card" v-for="product in displayedProducts" :key="product.id">
       <div class="product-image">
         <img :src="product.image" :alt="product.title" />
       </div>
@@ -49,50 +49,57 @@ export default {
   data() {
     return {
       isLayoutList: false,
-      query: '',
       isActive: false,
+      hasProducts: null ?? 'filteredProducts',
+      query: '',
       filters: null,
-      selectedCategory: '',
-      selectedRating: '',
-      minPrice: 0,
-      maxPrice: 10000,
     };
   },
-  computed: {
-    ...mapState(['products', 'loading']),
-    productListClasses() {
-      return this.isLayoutList ? "layout-list" : "layout-grid";
-    },
-    filteredProducts() {
-      return this.products.filter(product =>
-        (product.title.toLowerCase().includes(this.query.toLowerCase())) &&
-        (this.selectedCategory === '' || product.category === this.selectedCategory) &&
-        (this.selectedRating === '' || Math.floor(product.rating.rate) === this.selectedRating) &&
-        (this.minPrice === null || product.price >= this.minPrice) &&
-        (this.maxPrice === null || product.price <= this.maxPrice)
-      );
-    },
-  },
   methods: {
-    ...mapActions(['fetchProducts']),
+    ...mapActions(['fetchProducts', 'searchProducts', 'filterProducts']),
     toggleLayout() {
       this.isLayoutList = !this.isLayoutList;
-    },
-    updateSearchQuery(query) {
-      this.query = query;
     },
     toggleFilter() {
       this.isActive = !this.isActive;
     },
-    // Update the filters based on filter options from FilterOptions component
     updateFilters(filters) {
-      console.log('Received filters:', filters); // Debugging
       this.filters = filters;
-      this.selectedCategory = filters.category;
-      this.selectedRating = filters.rating;
-      this.minPrice = filters.minPrice;
-      this.maxPrice = filters.maxPrice;
+      if (this.filters) {
+        console.log('updateFilters this.filters', this.filters);
+        this.filterProducts(this.filters, this.query);
+      }
     },
+    updateSearch(query) {
+      this.query = query;
+      if (this.query) {
+        this.searchProducts(query);
+      } else {
+        this.$store.commit('setFilteredProducts', this.$store.state.products);
+      }
+      // Also set products to update the view
+      this.products = this.$store.state.filteredProducts;
+    },
+
+  },
+  computed: {
+    ...mapState(['products', 'loading', 'searching', 'filtering', 'filteredProducts',]),
+    productListLayout() {
+      return this.isLayoutList ? "layout-list" : "layout-grid";
+    },
+    displayedProducts() {
+      if (this.loading || this.searching || this.filtering) {
+        return [];
+      }
+      if (this.query || this.searching) {
+        return this.filteredProducts;
+      }
+      if (this.filters || this.filtering) {
+        return this.filteredProducts;
+      }
+      return this.products;
+    },
+
   },
   created() {
     this.fetchProducts();
@@ -101,7 +108,6 @@ export default {
 </script>
 
 <style scoped>
-/* Media Query */
 @media (min-width: 0px) and (max-width: 440px) {}
 
 @media (min-width: 768px) {

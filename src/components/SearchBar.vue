@@ -1,6 +1,6 @@
 <template>
     <section id="search" class="search">
-        <input v-model="searchQuery" @input="searchProducts" placeholder="Search products" />
+        <input v-model="searchQuery" @input="handleSearch" placeholder="Search products" />
         <i class="fa fa-search"></i>
     </section>
 </template>
@@ -13,9 +13,9 @@ export default {
         };
     },
     methods: {
-        searchProducts() {
-            console.log("Searching...");
-            this.$emit('search', this.searchQuery);
+        handleSearch() {
+            this.$emit('search', this.searchQuery); // Emit the search query
+            console.log('Emit search query...', this.searchQuery);
         },
     },
 };
@@ -39,5 +39,4 @@ export default {
     align-items: center;
     color: #44444488;
 }
-
 </style>
