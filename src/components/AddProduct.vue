@@ -1,7 +1,7 @@
 <template>
     <div class="add-product product">
         <h2>Add New Product</h2>
-        <form @submit.prevent="addProduct">
+        <form @submit.prevent="addNewProduct">
             <label for="title">Title:</label>
             <input type="text" id="title" v-model="newProduct.title" placeholder="Product Title" required>
 
@@ -29,7 +29,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 
 export default {
     name: 'AddProduct',
@@ -45,37 +45,15 @@ export default {
         };
     },
     computed: {
-        ...mapState(['categories']), // Add categories to computed properties
+        ...mapState(['categories', 'adding', 'addedProduct']),
     },
     methods: {
-        ...mapActions(['fetchProducts']),
-        async addProduct() {
-            // Perform API call to create a new product
-            try {
-                const response = await fetch('https://fakestoreapi.com/products', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(this.newProduct),
-                });
-                const product = await response.json();
-                console.log(product);
-                window.alert(`You successfully added a new product. See it in the console log.`);
-
-                // Assuming you have a Vuex action to fetch updated products after creation
-                //this.fetchProducts(); // Uncomment and replace with your actual action
-
-                // Clear the form
-                this.newProduct = {
-                    title: "",
-                    price: 0,
-                    description: "",
-                    image: "",
-                    category: "",
-                };
-            } catch (error) {
-                console.error('Error creating product:', error);
+        ...mapActions(['fetchProducts', 'addProduct']),
+        addNewProduct() {
+            if (this.newProduct.title && this.newProduct.price && this.newProduct.description && this.newProduct.category) {
+                // Call your method to handle adding the new product
+                this.addProduct(this.newProduct);
+                this.clearForm();
             }
         },
         handleImageUpload(event) {
@@ -83,13 +61,19 @@ export default {
             if (selectedFile) {
                 // Store the selected file in newProduct
                 this.newProduct.image = selectedFile['name'];
-                console.log(this.newProduct.image);
             }
+        },
+        clearForm() {
+            this.newProduct.title = "";
+            this.newProduct.price = 0.00;
+            this.newProduct.description = "";
+            this.newProduct.image = null;
+            this.newProduct.category = "";
         },
         goToProducts() {
             this.$router.push(`/products`); // Redirect to products list page
         },
-    },
+    }
 };
 </script>
 

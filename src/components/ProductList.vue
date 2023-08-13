@@ -50,7 +50,6 @@ export default {
     return {
       isLayoutList: false,
       isActive: false,
-      hasProducts: null ?? 'filteredProducts',
       query: '',
       filters: null,
     };

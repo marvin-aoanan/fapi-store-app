@@ -45,16 +45,6 @@ export default {
         },
     },
     methods: {
-        // applyFilters() {
-        //     const filters = {
-        //         category: this.selectedCategory,
-        //         rating: this.selectedRating,
-        //         minPrice: this.minPrice,
-        //         maxPrice: this.maxPrice,
-        //     };
-        //     this.$emit('filter', filters);
-        //     console.log('Emitting Filters', filters);
-        // },
         applyFilters() {
             this.$emit('filter', {
                 category: this.selectedCategory,
@@ -81,12 +71,10 @@ export default {
     margin: 5px;
     padding: 0;
 }
-
 .filterOptions input,
 .filterOptions select {
     margin: 0;
 }
-
 .categorySelect {
     text-transform: capitalize;
 }

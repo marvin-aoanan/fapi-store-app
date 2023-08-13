@@ -1,19 +1,27 @@
 // Disable ESLint for the next line
 // eslint-disable-next-line no-unused-vars
-import { mapState, mapActions } from 'vuex';
+import * as api from '@/api/services.js'; // Update the import path
+
+//import { mapState, mapActions } from 'vuex';
 import { createStore } from 'vuex';
+import { createProduct } from '@/api/services';
 
 export default createStore({
   state: {
     products: [],
+    categories:[],
     loading: false,
     searching: false,
     filtering: false,
     filteredProducts: [],
+    addedProduct: [],
   },
   mutations: {
     setProducts(state, products) {
       state.products = products;
+    },
+    setCategories(state, categories) {
+      state.categories = categories;
     },
     setLoading(state, loading) {
       state.loading = loading;
@@ -27,19 +35,38 @@ export default createStore({
     setFilteredProducts(state, filteredProducts) {
       state.filteredProducts = filteredProducts;
     },
+    setNewProduct(state, addedProduct) {
+      state.addedProduct = addedProduct;
+    },
   },
   actions: {
     async fetchProducts({ commit }) {
       commit('setLoading', true);
       try {
-        const response = await fetch('https://fakestoreapi.com/products');
-        const products = await response.json();
-        commit('setProducts', products);
-        commit('setFilteredProducts', products); 
+        const response = await api.getProducts();
+        commit('setProducts', response.data);
+        commit('setFilteredProducts', response.data); 
       } catch (error) {
         console.error('Error fetching products:', error);
       }
+      const categories = new Set(this.state.products.map(product => product.category));
+      commit('setCategories', categories);
       commit('setLoading', false);
+    },
+    async addProduct({ commit, dispatch }, newProduct) {
+      try {
+        const response = await createProduct(newProduct);
+        if (response.data) {
+          commit('setNewProduct', response.data)
+          console.log('Product added:', response.data);
+          window.alert('You successfully added a new product.');
+          
+          // Call the fetchProducts action to update the list of products
+          await dispatch('fetchProducts');
+        }
+      } catch (error) {
+        console.error('Error adding product:', error);
+      }
     },
     async searchProducts({ commit, state }, query) {
       commit('setSearching', true);

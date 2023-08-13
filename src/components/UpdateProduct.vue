@@ -36,6 +36,7 @@
 
 <script>
 import { mapActions, mapState } from 'vuex';
+import { updateProduct } from '@/api/services';
 
 export default {
     name: 'UpdateProduct',
@@ -50,22 +51,11 @@ export default {
         ...mapActions(['fetchProducts', 'updateProductInStore']),
         async updateProduct() {
             try {
-                const response = await fetch(
-                    `https://fakestoreapi.com/products/${this.detailedProduct.id}`,
-                    {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(this.detailedProduct),
-                    }
-                );
-                const product = await response.json();
-                console.log(product);
-                window.alert(`You successfully updated the product with id number ${this.detailedProduct.id}. See it in the console log.`);
-
-                //this.updateProductInStore(product); // Update the product in the store
-
+                const updatedProduct = await updateProduct(this.detailedProduct.id, this.detailedProduct);
+                console.log(updatedProduct.data);
+                window.alert(`You successfully updated the product with id number ${this.detailedProduct.id}. 
+                See it in the console log.`);
+                //this.updateProductInStore(updatedProduct); // Update the product in the store
                 //this.$router.push('/products'); // Redirect to products list page
             } catch (error) {
                 console.error('Error updating product:', error);
@@ -74,7 +64,6 @@ export default {
         handleImageUpload(event) {
             const selectedFile = event.target.files[0]; // Get the selected file
             if (selectedFile) {
-                // Store the selected file in newProduct
                 this.detailedProduct.image = selectedFile['name'];
                 console.log(this.detailedProduct.image);
             }
