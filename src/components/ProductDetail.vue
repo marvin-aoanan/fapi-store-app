@@ -1,5 +1,5 @@
 <template>
-  <div v-if="detailedProduct" :id="'product-detail-' + loadedProduct.id" class="product-detail">
+  <div v-if="detailedProduct" :id="'product-detail-' + detailedProduct.id" class="product-detail">
     <div class="product-image">
       <img :src="detailedProduct.image" :alt="detailedProduct.title" />
     </div>
@@ -93,5 +93,16 @@ export default {
 .product-image {
   width: 100%;
   padding: 10px;
+}
+@media (min-width: 768px) {
+  .product-detail {
+  display: flex;
+}
+.product-detail > * {
+  flex: 1;
+}
+.product-image{
+  max-width: 40%;
+}
 }
 </style>
