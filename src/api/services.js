@@ -2,6 +2,10 @@ import axios from 'axios';
 
 const api = axios.create({
   baseURL: 'https://fakestoreapi.com/',
+  headers: {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': 'http://localhost:8081' // Replace with your frontend origin
+  }
 });
 
 export const getProducts = () => api.get('/products');

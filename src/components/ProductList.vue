@@ -13,8 +13,8 @@
     </div>
   </div>
 
-  <div v-if="loading || searching || filtering" class="loader"></div>
-  <div v-else id="productList" class="productList" :class="productListLayout">
+  <div v-if="productState.isLoading || productState.isSearching || productState.isFiltering" class="loader"></div>
+  <div v-if="productState.isComplete" id="productList" class="productList" :class="productListLayout">
     <div :id="product.id" class="product-card" v-for="product in displayedProducts" :key="product.id">
       <div class="product-image">
         <img :src="product.image" :alt="product.title" />
@@ -82,18 +82,21 @@ export default {
 
   },
   computed: {
-    ...mapState(['products', 'loading', 'searching', 'filtering', 'filteredProducts',]),
+    ...mapState(['products', 'filteredProducts', 'productState']),
     productListLayout() {
       return this.isLayoutList ? "layout-list" : "layout-grid";
     },
     displayedProducts() {
-      if (this.loading || this.searching || this.filtering) {
+      if (this.productState.isLoading || this.productState.isSearching || this.productState.isFiltering) {
         return [];
       }
-      if (this.query || this.searching) {
+      if(this.productState.isComplete) {
         return this.filteredProducts;
       }
-      if (this.filters || this.filtering) {
+      if (this.query || this.productState.isSearching) {
+        return this.filteredProducts;
+      }
+      if (this.filters || this.productState.isFiltering) {
         return this.filteredProducts;
       }
       return this.products;
