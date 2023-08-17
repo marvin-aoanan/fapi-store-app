@@ -41,7 +41,7 @@ export default {
     },
     computed: {
         uniqueCategories() {
-            return ['All', ...new Set(this.$store.state.products.map(product => product.category))];
+            return ['All', ...this.$store.state.categories];
         },
     },
     methods: {
