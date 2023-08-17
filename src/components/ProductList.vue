@@ -57,7 +57,7 @@ export default {
     };
   },
   methods: {
-    ...mapActions(['fetchProducts', 'searchProducts', 'filterProducts']),
+    ...mapActions(['fetchProducts', 'fetchCategories', 'searchProducts', 'filterProducts']),
     toggleLayout() {
       this.isLayoutList = !this.isLayoutList;
     },
@@ -109,6 +109,7 @@ export default {
     const hasFetchedProducts = Object.keys(this.fetchedProducts).length;
     if(hasFetchedProducts == 0) {
       await this.fetchProducts();
+      await this.fetchCategories();
     }
     
   },

@@ -8,8 +8,8 @@ import { createProduct } from '@/api/services';
 export default createStore({
   state: {
     products: [],
-    product: [],
     categories: [],
+    product: [],
     productState: {},
     userState: {
       // preLogin: false,
@@ -60,9 +60,18 @@ export default createStore({
         commit('setLoading', { isLoading: false, isUpdated: false, isComplete: error });
         return null;
       }
-      const categories = new Set(this.state.products.map(product => product.category));
-      commit('setCategories', categories);
+      //const categories = new Set(this.state.products.map(product => product.category));
+      //commit('setCategories', categories);
       commit('setLoading', { isLoading: false, isUpdated: false, isComplete: true });
+    },
+    async fetchCategories({ commit }) {
+      try {
+        const response = await api.getCategories();
+        console.log(response);
+        commit('setCategories', response.data);
+      } catch(error) {
+        console.error('Error fetching categories:', error);
+      }
     },
     async fetchProduct({ commit }, productId) {
       commit('setLoading', { isLoading: true, isUpdated: false, isComplete: false });
