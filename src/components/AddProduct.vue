@@ -42,13 +42,14 @@ export default {
                 image: null, // Store the image file
                 category: "",
             },
+            fetchedCategories: this.$store.state.categories,
         };
     },
     computed: {
         ...mapState(['categories', 'adding', 'addedProduct']),
     },
     methods: {
-        ...mapActions(['fetchProducts', 'addProduct']),
+        ...mapActions(['fetchCategories', 'addProduct']),
         goToProducts() {
             this.$router.push(`/products`); // Redirect to products list page
         },
@@ -74,7 +75,13 @@ export default {
                 this.goToProducts();
             }
         },
-    }
+    },
+    async created() {
+        const hasFetchedCategories = Object.keys(this.fetchedCategories).length;
+        if (hasFetchedCategories == 0) {
+            await this.fetchCategories();
+        }
+    },
 };
 </script>
 

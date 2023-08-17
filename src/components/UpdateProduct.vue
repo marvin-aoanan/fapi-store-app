@@ -49,7 +49,7 @@ export default {
         };
     },
     methods: {
-        ...mapActions(["fetchProduct", "editProduct"]),
+        ...mapActions(["fetchProducts", "fetchCategories", "fetchProduct",  "editProduct"]),
         goToProducts() {
             this.$router.push(`/product/${this.productId}`);
         },
@@ -81,7 +81,7 @@ export default {
         },
     },
     computed: {
-        ...mapState(["product", "categories", "productState", "updatedProduct"]),
+        ...mapState(["products", "categories", "product", "productState", "updatedProduct"]),
         displayProduct() {
             if(Object.keys(this.updatedProduct).length && this.productId === this.updatedProduct.id) {
                 return this.updatedProduct;
@@ -95,6 +95,8 @@ export default {
         const hasUpdatedProduct = Object.keys(this.updatedProduct).length;
         if(hasUpdatedProduct == 0 && (this.updatedProduct.id != this.productId)) {
             await this.fetchSingleProduct();
+            await this.fetchProducts();
+            await this.fetchCategories();
         }
     },
 };
