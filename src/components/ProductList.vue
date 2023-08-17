@@ -24,9 +24,9 @@
           <h2 class="product-title">{{ product.title }}</h2>
         </router-link>
         <p class="product-price">Price: {{ product.price }}</p>
-        <div class="product-rating">
-          <p><span v-for="star in 5" :key="star"
-              :class="['fa', 'fa-star', { 'checked': star <= Math.floor(product.rating.rate) }]"></span></p>
+        <div v-if="product.rating" class="product-rating">
+          <p><span v-for="star in 5" :key="star" class="fa fa-star"
+              :class=" {'checked': star <= Math.floor(product.rating.rate) }"></span></p>
           <p><em>{{ product.rating.rate }} average based on {{ product.rating.count }} reviews.</em></p>
         </div>
       </div>
@@ -52,6 +52,8 @@ export default {
       isActive: false,
       query: '',
       filters: null,
+      fetchedProducts: this.$store.state.products,
+      updatedProduct: this.$store.state.updatedProduct,
     };
   },
   methods: {
@@ -103,8 +105,12 @@ export default {
     },
 
   },
-  created() {
-    this.fetchProducts();
+  async created() {
+    const hasFetchedProducts = Object.keys(this.fetchedProducts).length;
+    if(hasFetchedProducts == 0) {
+      await this.fetchProducts();
+    }
+    
   },
 };
 </script>

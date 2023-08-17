@@ -1,80 +1,100 @@
 <template>
-    <div class="update-product product">
+    <div class="update-product product" v-if="displayProduct">
+        <div v-if="productState.isLoading" class="loader"></div>
         <h2>Update Product</h2>
-        <form @submit.prevent="updateProduct">
+        <form @submit.prevent="submitProductUpdate">
             <label for="title">Title:</label>
-            <input type="text" id="title" v-model="detailedProduct.title" placeholder="Product Title" required>
+            <input type="text" id="title" v-model="displayProduct.title" placeholder="Product Title" required />
 
             <label for="price">Price:</label>
-            <input type="number" id="price" step=".01" v-model="detailedProduct.price" placeholder="Product Price" required>
+            <input type="number" id="price" step=".01" v-model="displayProduct.price" placeholder="Product Price"
+                required />
 
             <label for="description">Description:</label>
-            <textarea id="description" v-model="detailedProduct.description" placeholder="Product Description"
+            <textarea id="description" v-model="displayProduct.description" placeholder="Product Description"
                 required></textarea>
 
             <label for="category">Category:</label>
-            <select id="category" v-model="detailedProduct.category" required :class="'categorySelect'">
+            <select id="category" v-model="displayProduct.category" required :class="'categorySelect'">
                 <option value="" disabled>Select a category</option>
-                <option v-for="category in categories" :key="category">{{ category }}</option>
+                <option v-for="category in categories" :key="category">
+                    {{ category }}
+                </option>
             </select>
 
             <div class="product-image">
-                <img :src="detailedProduct.image" :alt="detailedProduct.title" />
+                <img :src="displayProduct.image" :alt="displayProduct.title" />
             </div>
 
             <label for="image">Upload or Change Product Image:</label>
-            <input type="file" id="image" name="image" accept="image/*" @change="handleImageUpload">
+            <input type="file" id="image" name="image" accept="image/*" @change="handleImageUpload" />
 
             <div class="buttons">
                 <button type="submit" class="btn">Update Product</button>
                 <button @click="goToProducts" class="btn">Cancel</button>
             </div>
-            
         </form>
     </div>
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex';
-import { updateProduct } from '@/api/services';
+import { mapActions, mapState } from "vuex";
 
 export default {
-    name: 'UpdateProduct',
-    computed: {
-        ...mapState(['products', 'categories']),
-        detailedProduct() {
-            const productId = parseInt(this.$route.params.id, 10);
-            return this.products.find(product => product.id === productId) || {};
-        },
+    name: "UpdateProduct",
+    data() {
+        return {
+            productId: parseInt(this.$route.params.id, 10),
+            updatedProduct: this.$store.state.updatedProduct,
+        };
     },
     methods: {
-        ...mapActions(['fetchProducts', 'updateProductInStore']),
-        async updateProduct() {
-            try {
-                const updatedProduct = await updateProduct(this.detailedProduct.id, this.detailedProduct);
-                console.log(updatedProduct.data);
-                window.alert(`You successfully updated the product with id number ${this.detailedProduct.id}. 
-                See it in the console log.`);
-                //this.updateProductInStore(updatedProduct); // Update the product in the store
-                //this.$router.push('/products'); // Redirect to products list page
-            } catch (error) {
-                console.error('Error updating product:', error);
-            }
+        ...mapActions(["fetchProduct", "editProduct"]),
+        goToProducts() {
+            this.$router.push(`/product/${this.productId}`);
         },
         handleImageUpload(event) {
-            const selectedFile = event.target.files[0]; // Get the selected file
+            const selectedFile = event.target.files[0];
             if (selectedFile) {
-                this.detailedProduct.image = selectedFile['name'];
-                console.log(this.detailedProduct.image);
+                this.displayProduct.image = selectedFile.name;
             }
         },
-        goToProducts() {
-            this.$router.push(`/product/${this.detailedProduct.id}`); // Redirect to products list page
+        async fetchSingleProduct() {
+            if (this.productId) {
+                try {
+                    await this.fetchProduct(this.productId);
+                } catch (error) {
+                    console.error('Error fetching product:', error);
+                }
+            }
+        },
+        async submitProductUpdate() {
+            if (this.productId) {
+                try {
+                    const response = await this.editProduct(this.displayProduct);
+                    console.log('submitProductUpdate: ', response);
+                } catch (error) {
+                    console.error('Error submitting product update:', error);
+                }
+            }
+            this.goToProducts();
         },
     },
-    created() {
-        if (!this.products.length) {
-            this.fetchProducts();
+    computed: {
+        ...mapState(["product", "categories", "productState", "updatedProduct"]),
+        displayProduct() {
+            if(Object.keys(this.updatedProduct).length && this.productId === this.updatedProduct.id) {
+                return this.updatedProduct;
+            } else {
+                return this.product;
+            }
+        },
+    },
+    async created() {
+        //const updatedProduct = this.$store.state.updatedProduct;
+        const hasUpdatedProduct = Object.keys(this.updatedProduct).length;
+        if(hasUpdatedProduct == 0 && (this.updatedProduct.id != this.productId)) {
+            await this.fetchSingleProduct();
         }
     },
 };

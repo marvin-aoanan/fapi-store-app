@@ -1,8 +1,8 @@
 <template>
-  <div v-if="displayProduct">
+  <div v-if="displayProduct || productState.isComplete">
     <div id="message" class="message">{{ message }}</div>
     <div :id="'product-detail-' + displayProduct.id" class="product-detail">
-      <div v-if="loading" class="loader"></div>
+      <div v-if="productState.isLoading" class="loader"></div>
       <div class="product-image">
         <img :src="displayProduct.image" :alt="displayProduct.title" />
       </div>
@@ -37,15 +37,25 @@ export default {
   data() {
     return {
       productId: parseInt(this.$route.params.id, 10),
+      fetchedProducts: this.$store.state.products,
+      updatedProduct: this.$store.state.updatedProduct,
       message: '',
     };
   },
   methods: {
     ...mapActions(['fetchProduct', 'removeProduct']),
+    goToProducts() {
+      this.$router.push(`/products`); // Redirect to products list page
+    },
     async fetchSingleProduct() {
-      console.log('fetchSingleProduct', this.productId);
-      if (this.productId) {
+      const hasFetchedProducts = Object.keys(this.fetchedProducts).length;
+      const dataProducts = Object.values(this.fetchedProducts);
+      const dataProduct = dataProducts.find((product) => product.id == this.productId);
+      if (hasFetchedProducts == 0) { // Do fetch only if there is no products in Store
         await this.fetchProduct(this.productId);
+      } else {
+        this.$store.commit('setProduct', dataProduct);
+        return this.fetchedProducts;
       }
     },
     async deleteProduct() {
@@ -57,7 +67,7 @@ export default {
         if (confirm(message) == true) {
           await this.removeProduct(this.productId);
           window.alert(`Product id: ${this.productId}, successfully deleted.\n`);
-          await this.$router.push(`/products`);
+          this.goToProducts();
         } else {
           message = "You just canceled removing this product!";
           document.getElementById("message").innerHTML = message;
@@ -65,20 +75,26 @@ export default {
       }
     },
   },
-  goToProducts() {
-    this.$router.push(`/products`); // Redirect to products list page
-  },
   computed: {
-    ...mapState(['product', 'deletedProduct']),
+    ...mapState(['product', 'deletedProduct', 'productState']),
     displayProduct() {
-      return this.product;
+      const hasFetchedProduct = Object.keys(this.updatedProduct).length;
+      if ( (hasFetchedProduct > 0) && this.productId == this.updatedProduct.id ) {
+        return this.updatedProduct;
+      } else {
+        return this.product;
+      }
     },
     deletedProduct() {
       return this.deletedProduct;
     }
   },
-  async created() {
-    await this.fetchSingleProduct();
+  created() {
+    //const updatedProduct = this.$store.state.updatedProduct;
+    //const isProduct = Object.keys(this.fetchedProduct).length;
+    //if (isProduct == 0) {
+      this.fetchSingleProduct();
+    //}
   },
 };
 </script>

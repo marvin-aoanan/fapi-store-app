@@ -49,19 +49,8 @@ export default {
     },
     methods: {
         ...mapActions(['fetchProducts', 'addProduct']),
-        addNewProduct() {
-            if (this.newProduct.title && this.newProduct.price && this.newProduct.description && this.newProduct.category) {
-                // Call your method to handle adding the new product
-                this.addProduct(this.newProduct);
-                this.clearForm();
-            }
-        },
-        handleImageUpload(event) {
-            const selectedFile = event.target.files[0]; // Get the selected file
-            if (selectedFile) {
-                // Store the selected file in newProduct
-                this.newProduct.image = selectedFile['name'];
-            }
+        goToProducts() {
+            this.$router.push(`/products`); // Redirect to products list page
         },
         clearForm() {
             this.newProduct.title = "";
@@ -70,8 +59,20 @@ export default {
             this.newProduct.image = null;
             this.newProduct.category = "";
         },
-        goToProducts() {
-            this.$router.push(`/products`); // Redirect to products list page
+        handleImageUpload(event) {
+            const selectedFile = event.target.files[0]; // Get the selected file
+            if (selectedFile) {
+                // Store the selected file in newProduct
+                this.newProduct.image = "images/" + selectedFile['name'];
+            }
+        },
+        addNewProduct() {
+            if (this.newProduct.title && this.newProduct.price && this.newProduct.description && this.newProduct.category) {
+                // Call your method to handle adding the new product
+                this.addProduct(this.newProduct);
+                this.clearForm();
+                this.goToProducts();
+            }
         },
     }
 };
