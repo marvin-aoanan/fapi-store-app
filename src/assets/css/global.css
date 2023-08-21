@@ -171,11 +171,12 @@ textarea {
 button,
 .btn,
 a.btn {
+    position: relative;
     padding: 10px 20px;
     margin: 10px auto;
     border: 1px solid #4e4e4e;
     display: block;
-    background-color: transparent;
+    background-color: #FFF;
     border-radius: 0;
     text-align: center;
     text-decoration: none;

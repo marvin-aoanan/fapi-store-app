@@ -1,19 +1,20 @@
 <template>
     <footer class="footer">
-        <p>Copyright 2023. Developer: {{ appData.author }}</p>
+        <p>Copyright 2023. Developer: {{ this.getAppData.author }}</p>
     </footer>
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
 export default {
     name: "Footer",
-    props: { 
-        appData: Object
+    computed: {
+        ...mapGetters(['getAppData']),
     },
     mounted() {
         this.$emit('footerHeight', this.$el.offsetHeight);
     },
-}
+};
 </script>
 
 <style scoped>

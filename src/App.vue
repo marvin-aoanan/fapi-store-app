@@ -1,19 +1,29 @@
 <template>
-  <router-view :appData="appData" />
+  <router-view />
 </template>
 
 <script>
 export default {
   name: 'App',
-  data() {
-    return {
-      appData: {
-        siteName: 'fAPI Store App',
-        message: 'Hello,',
-        author: 'Marvin Aoanan',
-      },
-    };
+  created() {
+    this.initializeApp();
   },
+  methods: {
+    async initializeApp() {
+      // Check if user and authentication token exists in localStorage
+      const credentials = {
+        user: localStorage.getItem('userName'),
+        token: localStorage.getItem('authToken'),
+      }
+      if (credentials.user && credentials.token) {
+        await this.$store.commit('setUserStatus', { 
+          isLoggedIn: true,
+          name: credentials.user, 
+          accessToken: credentials.token });
+      }
+    },
+  },
+
 };
 </script>
 

@@ -1,24 +1,37 @@
 // Disable ESLint for the next line
 // eslint-disable-next-line no-unused-vars
-//import { mapState, mapActions } from 'vuex';
 import { createStore } from 'vuex';
 import * as api from '@/api/services'; // Update the import path
-import { createProduct } from '@/api/services';
-
 export default createStore({
   state: {
+    appData: {
+      siteName: 'fAPI Store App',
+      author: 'Marvin Aoanan',
+      version: '1.23.0',
+      message: {
+        welcome: '',
+      },
+    },
+    user: {
+      isPreReg: false,
+      isPreLogin: false,
+      isLoggedIn: false,
+      isLogOut: false,
+      name: 'visitor',
+      accessToken: null,
+    },
+    activity: {
+      isLoading: false,
+    },
+    //productState: [],
     products: [],
     categories: [],
     product: [],
-    productState: {},
-    userState: {
-      // preLogin: false,
-      // postLogin: false,
-    },
     filteredProducts: [],
     addedProduct: [],
     updatedProduct: [],
     deletedProduct: [],
+
   },
   mutations: {
     setProducts(state, products) {
@@ -37,7 +50,7 @@ export default createStore({
       state.categories = categories;
     },
     setLoading(state, status) {
-      state.productState = status;
+      state.activity = status;
     },
     setFilteredProducts(state, filteredProducts) {
       state.filteredProducts = filteredProducts;
@@ -45,8 +58,15 @@ export default createStore({
     setNewProduct(state, addedProduct) {
       state.addedProduct = addedProduct;
     },
+    setUserStatus(state, status) {
+      state.user = status;
+    },
+    setMessage(state, message) {
+      state.message = message;
+    },
   },
   actions: {
+    // Get Products
     async fetchProducts({ commit }) {
       commit('setLoading', { isLoading: true, isUpdated: false, isComplete: false });
       try {
@@ -69,7 +89,7 @@ export default createStore({
         const response = await api.getCategories();
         console.log(response);
         commit('setCategories', response.data);
-      } catch(error) {
+      } catch (error) {
         console.error('Error fetching categories:', error);
       }
     },
@@ -79,10 +99,23 @@ export default createStore({
         const response = await api.getProduct(productId);
         commit('setProduct', response.data);
       } catch (error) {
+        console.error('Error fetching product:', error);
         commit('setLoading', { isLoading: false, isComplete: error });
       }
       commit('setLoading', { isLoading: false, isUpdated: false, isComplete: true });
     },
+
+    // Get Carts
+    async fetchCarts() {
+      try {
+        const response = await api.getCarts();
+        console.log(response.data);
+      } catch (error) {
+        console.error('Error fetching carts:', error);
+      }
+    },
+
+    // Setters and Filters
     async editProduct({ commit, state }, displayProduct) {
       commit('setLoading', { isLoading: true, isUpdated: false, isComplete: false });
       try {
@@ -95,7 +128,6 @@ export default createStore({
         console.error('Error updating product:', error);
       }
       commit('setLoading', { isLoading: false, isUpdated: true, isComplete: true });
-
       const updatedProducts = Object.values(state.products);
       const index = updatedProducts.findIndex((el) => el.id === state.updatedProduct.id);
       updatedProducts[index] = state.updatedProduct;
@@ -114,11 +146,6 @@ export default createStore({
       }
       commit('setLoading', { isLoading: false, isDeleted: true, isComplete: true });
 
-      //const updatedProducts = Object.values(state.products);
-      //const index = updatedProducts.findIndex((el) => el.id === state.updatedProduct.id);
-      //updatedProducts[index] = state.updatedProduct;
-      //console.log(updatedProducts);
-
       const updatedProducts = Object.values(state.products);
       console.log('Products: ', updatedProducts);
       const index = updatedProducts.findIndex((el) => el.id === productId);
@@ -135,7 +162,7 @@ export default createStore({
     async addProduct({ commit, state, dispatch }, newProduct) {
       commit('setLoading', { isLoading: true, isAdded: false, isComplete: false });
       try {
-        const response = await createProduct(newProduct);
+        const response = await api.createProduct(newProduct);
         if (response.data) {
           commit('setNewProduct', response.data)
           console.log('Product added:', response.data);
@@ -165,7 +192,6 @@ export default createStore({
       }
       await commit('setLoading', { isSearching: false, isComplete: true, });
     },
-
     async filterProducts({ commit, state }, filters) {
       commit('setLoading', { isFiltering: true, isComplete: false, });
       const filteredProducts = await state.products.filter(product => {
@@ -178,6 +204,46 @@ export default createStore({
       commit('setFilteredProducts', filteredProducts);
       await commit('setLoading', { isFiltering: false, isComplete: true, });
     },
+
+    // User Login
+    async userLogin({ commit }, credentials) {
+      commit('setUserStatus', { isLoggedIn: false, accessToken: null });
+      commit('setLoading', { isLoading: true });
+      try {
+        // Perform login using the login service
+        const response = await api.login(credentials);
+        const token = response.data.token;
+        commit('setUserStatus', { isLoggedIn: true, name: credentials.username, accessToken: token, });
+        
+        // Set userName & authToken to localStorage
+        localStorage.setItem('authToken', token);
+        localStorage.setItem('userName', credentials.username);
+
+        commit('setLoading', { isLoading: false });
+        commit('setMessage', { success: true });
+      } catch (error) {
+        console.error('Error logging in:', error);
+        commit('setMessage', { error: error.response.data });
+      }
+    },
+    setUserFromToken({ commit }, credentials) {
+      // Perform the necessary decoding of the token to extract user data
+      //const userData = decodeToken(token);
+      console.log('setUserFromToken', credentials);
+      
+      // Commit a mutation to set the user state
+      commit('setUserStatus', {
+        isLoggedIn: true,
+        name: credentials.user,
+        accessToken: credentials.token,
+      });
+    },
+    
+  },
+  getters: {
+    getAppData: (state) => state.appData,
+    isLoggedIn: (state) => state.user.isLoggedIn,
+    getUserName: (state) => state.user.name,
   },
   modules: {},
 });

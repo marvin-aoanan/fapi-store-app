@@ -9,12 +9,12 @@
         :second-icon-class="'fa fa-regular fa-rectangle-list'" @toggle="toggleLayout" />
     </div>
     <div class="filter-tool" :class="{ 'is-active': isActive }">
-      <FilterOptions v-if="products.length" :products="filteredProducts" @filter="updateFilters" />
+      <FilterOptions v-if="this.products.length" :products="filteredProducts" @filter="updateFilters" />
     </div>
   </div>
 
-  <div v-if="productState.isLoading || productState.isSearching || productState.isFiltering" class="loader"></div>
-  <div v-if="productState.isComplete" id="productList" class="productList" :class="productListLayout">
+  <div v-if="this.activity.isLoading || this.activity.isSearching || this.activity.isFiltering" class="loader"></div>
+  <div v-if="this.activity.isComplete" id="productList" class="productList" :class="productListLayout">
     <div :id="product.id" class="product-card" v-for="product in displayedProducts" :key="product.id">
       <div class="product-image">
         <img :src="product.image" :alt="product.title" />
@@ -57,7 +57,7 @@ export default {
     };
   },
   methods: {
-    ...mapActions(['fetchProducts', 'fetchCategories', 'searchProducts', 'filterProducts']),
+    ...mapActions(['fetchProducts', 'fetchCategories', 'fetchCarts', 'searchProducts', 'filterProducts']),
     toggleLayout() {
       this.isLayoutList = !this.isLayoutList;
     },
@@ -84,21 +84,21 @@ export default {
 
   },
   computed: {
-    ...mapState(['products', 'filteredProducts', 'productState']),
+    ...mapState(['products', 'filteredProducts', 'activity']),
     productListLayout() {
       return this.isLayoutList ? "layout-list" : "layout-grid";
     },
     displayedProducts() {
-      if (this.productState.isLoading || this.productState.isSearching || this.productState.isFiltering) {
+      if (this.activity.isLoading || this.activity.isSearching || this.activity.isFiltering) {
         return [];
       }
-      if(this.productState.isComplete) {
+      if(this.activity.isComplete) {
         return this.filteredProducts;
       }
-      if (this.query || this.productState.isSearching) {
+      if (this.query || this.activity.isSearching) {
         return this.filteredProducts;
       }
-      if (this.filters || this.productState.isFiltering) {
+      if (this.filters || this.activity.isFiltering) {
         return this.filteredProducts;
       }
       return this.products;
@@ -106,11 +106,12 @@ export default {
 
   },
   async created() {
-    const hasFetchedProducts = Object.keys(this.fetchedProducts).length;
-    if(hasFetchedProducts == 0) {
+    //const hasFetchedProducts = Object.keys(this.fetchedProducts).length;
+    //if(hasFetchedProducts == 0) {
       await this.fetchProducts();
       await this.fetchCategories();
-    }
+      await this.fetchCarts();
+    //}
     
   },
 };

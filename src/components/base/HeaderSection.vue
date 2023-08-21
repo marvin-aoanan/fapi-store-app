@@ -1,14 +1,16 @@
 <template>
   <header class="header">
-    <h1>{{ appData.siteName }}</h1>
+    <h1>{{ this.getAppData.siteName }}</h1>
   </header>
 </template>
 
 <script>
+import { mapGetters } from 'vuex';
+
 export default {
   name: 'Header',
-  props: {
-    appData: Object
+  computed: {
+    ...mapGetters(['getAppData']),
   },
   mounted() {
     this.$emit('headerHeight', this.$el.offsetHeight);
@@ -18,9 +20,9 @@ export default {
 
 <style scoped>
 header {
-    background-color: #333;
-    color: #fff;
-    padding: 1rem;
-    text-align: center;
+  background-color: #333;
+  color: #fff;
+  padding: 1rem;
+  text-align: center;
 }
 </style>

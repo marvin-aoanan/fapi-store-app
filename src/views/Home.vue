@@ -1,5 +1,5 @@
 <template>
-    <BaseLayout :appData="appData">
+    <BaseLayout>
         <div id="home-content" class="content">
             <div class="section-wrapper">
                 <div class="custom-background background-video">
@@ -8,8 +8,9 @@
                 </div>
                 <div class="section-content">
                     <div class="welcome-message">
-                        <h2>{{ appData.message }} Welcome to {{ appData.siteName }}!</h2>
+                        <h2> Welcome, {{ message }}!</h2>
                     </div>
+                    <LoginUser />
                 </div>
             </div>
         </div>
@@ -17,17 +18,33 @@
 </template>
   
 <script>
-import { defineComponent } from 'vue';
+import { mapGetters, mapState } from 'vuex';
 import BaseLayout from '@/components/base/BaseLayout.vue';
+import LoginUser from '@/components/LoginUser.vue';
 
-export default defineComponent({
+export default {
     components: {
         BaseLayout,
+        LoginUser,
     },
-    props: {
-        appData: Object
+    computed: {
+        ...mapState(['activity']),
+        ...mapGetters(['getAppData', 'isLoggedIn', 'getUserName']),
+        appData() {
+            return this.getAppData;
+        },
+        message() {
+            const message = this.getAppData.message;
+            return this.isLoggedIn ? message.welcome + '' + this.userName : 'Visitor';
+        },
+        userName() {
+            // Access the user's name from your user module in Vuex
+            // For example: this.$store.state.user.name
+            return this.getUserName || ''; // Use an empty string as default
+        },
     },
-});
+
+};
 </script>
 
 <style scoped>
@@ -35,9 +52,11 @@ export default defineComponent({
     padding: 0;
     text-align: center;
 }
+
 .section-wrapper {
     position: relative;
 }
+
 .custom-background video {
     width: 100%;
     height: calc(100vh - var(--header-height, 0px) - var(--nav-height, 0px) - var(--footer-height, 0px));

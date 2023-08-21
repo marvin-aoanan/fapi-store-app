@@ -1,10 +1,8 @@
 // Disable ESLint for the next line
 // eslint-disable-next-line no-unused-vars
+import store from '@/store';
 import { createRouter, createWebHistory } from 'vue-router';
-import ProductList from '@/components/ProductList.vue';
-import ProductDetail from '@/components/ProductDetail.vue';
-import AddProduct from '@/components/AddProduct.vue';
-import UpdateProduct from '@/components/UpdateProduct.vue';
+
 
 // Views
 import Home from '@/views/Home.vue';
@@ -13,28 +11,10 @@ import Product from '@/views/Product.vue';
 import ProductAdd from '@/views/ProductAdd.vue';
 import ProductUpdate from '@/views/ProductUpdate.vue';
 
-const routes = [
-  {
-    path: '/productlist',
-    component: ProductList,
-    name: 'ProductList'
-  },
-  {
-    path: '/productdetail/:id',
-    component: ProductDetail,
-    name: 'ProductDetail'
-  },
-  {
-    path: '/add-product',
-    component: AddProduct,
-    name: 'AddProduct'
-  },
-  {
-    path: '/update/:id',
-    component: UpdateProduct,
-    name: 'UpdateProduct'
-  },
+import UnauthorizedAccess from '@/views/protected/UnauthorizedAccess.vue';
+import ProtectedProducts from '@/views/protected/ProtectedProducts.vue';
 
+const routes = [
   // Routes with base layout
   {
     path: '/',
@@ -61,12 +41,53 @@ const routes = [
     component: ProductUpdate,
     name: 'ProductUpdate'
   },
-  // ... other routes
+  {
+    path: '/login',
+    component: Home,
+    name: 'Login',
+    meta: { authenticated: true }
+  },
+  {
+    path: '/logout',
+    component: Home,
+    name: 'Logout'
+  },
+  {
+    path: '/unauthorized',
+    component: UnauthorizedAccess,
+    name: 'UnauthorizedAccess'
+  },
+  // ... other non restricted routes
+
+  // Restricted routes... 
+  {
+    path: '/protected',
+    component: ProtectedProducts,
+    name: 'ProtectedProducts',
+    meta: { requiresAuth: true }, // Apply the route guard
+  },
 ];
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
+});
+
+router.beforeEach((to, from, next) => {
+  // Check if the route requires authentication
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    // Check if the user is authenticated (has access token)
+    if (!store.state.accessToken) {
+      // Redirect to login page or handle unauthorized access
+      next({ name: 'UnauthorizedAccess' });
+    } else {
+      // User is authenticated, proceed to the route
+      next();
+    }
+  } else {
+    // Route does not require authentication, proceed
+    next();
+  }
 });
 
 export default router;
